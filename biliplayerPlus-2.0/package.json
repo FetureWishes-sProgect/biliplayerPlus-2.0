@@ -16,6 +16,7 @@
   "dependencies": {
     "@jamescoyle/vue-icon": "^0.1.2",
     "@mdi/js": "^7.1.96",
-    "@shopify/draggable": "^1.0.0-beta.8"
+    "@shopify/draggable": "^1.0.0-beta.8",
+    "vuedraggable": "^4.1.0"
   }
 }

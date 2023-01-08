@@ -1,5 +1,4 @@
-//此部分在脚本运行过程中不会更改
-export default{
+let data={
 	settingName: 'bilibili播放器plus设置',//设置面板标题
 	elementMapper:[{//不同页面元素映射至一致
 			filter:/(video\/[AaBb][Vv])|(watchlater)|(medialist)/,//正则
@@ -35,3 +34,6 @@ export default{
 	maxInitTimes:6,//最大初始化次数
 	coreVersion:"1.0",//内核版本
 }
+
+//此部分在脚本运行过程中不会更改
+export default data;

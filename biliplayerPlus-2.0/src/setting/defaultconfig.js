@@ -138,4 +138,4 @@ export default{//默认设置
 			"touchVolume",
 		],
 	},
-},
+}
