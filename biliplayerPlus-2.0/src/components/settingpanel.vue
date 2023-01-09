@@ -19,7 +19,21 @@
 			chosenClass="chosenGridbox"
 		>
 			<template #item="{ element, index }">
-				<div class="list-group-item">{{ config[element] }} {{ index }}</div>
+				<el-tooltip
+					class="box-item"
+					effect="light"
+					:disabled="!config[element].title"
+					:content="config[element].title"
+					placement="top-start"
+					show-after="800"
+				>
+					<el-switch
+						v-if="config[element].type=='bool'"
+						v-model="config[element].value"
+						:active-text="config[element].name"
+					/>
+					<div v-else>{{ config[element] }} {{ index }}</div>
+				</el-tooltip>
 			</template>
 		</draggable>
 		<!-- <div class="gridbox">
@@ -69,36 +83,35 @@ export default {
 </script>
 
 <style scoped>
-
-.settingpanel{
-	position:fixed;
-	display:flex;
-	flex-direction:column;
-	min-width:660px;
-	min-height:380px;
-	inset:20%;
-	background:rgba(33,33,33,.9);
-	border:1px solid hsla(0,0%,100%,.12);
-	z-index:999;
-	box-shadow:rgb(0 0 0 / 25%) 0px 0px 10px 0px;
-	color:white;
-}
-.btnlist{
-	position:absolute;
-	font-size:16px;
-	top:10px;
-	right:10px;
-}
-.gridbox{
-	display:grid;
-	width:100%;
-	overflow:auto;
-	grid-template-columns:repeat(2,50%);
-}
-.ghostGridbox{
-	background: #fff;
-}
-/* .chosenGridbox{
-	background: red;
-} */
+	.settingpanel{
+		position:fixed;
+		display:flex;
+		flex-direction:column;
+		min-width:660px;
+		min-height:380px;
+		inset:20%;
+		background:rgba(33,33,33,.9);
+		border:1px solid hsla(0,0%,100%,.12);
+		z-index:999;
+		box-shadow:rgb(0 0 0 / 25%) 0px 0px 10px 0px;
+		color:white;
+	}
+	.btnlist{
+		position:absolute;
+		font-size:16px;
+		top:10px;
+		right:10px;
+	}
+	.gridbox{
+		display:grid;
+		width:100%;
+		overflow:auto;
+		grid-template-columns:repeat(2,50%);
+	}
+	.ghostGridbox{
+		background: #fff;
+	}
+	/* .chosenGridbox{
+		background: red;
+	} */
 </style>
