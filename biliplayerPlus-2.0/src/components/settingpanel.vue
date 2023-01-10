@@ -8,34 +8,74 @@
 			<svg-icon type="mdi" :path="mdiRefresh"></svg-icon>
 			<svg-icon type="mdi" :path="mdiClose" @click="closesettingpanel()"></svg-icon>
 		</div>
-		<draggable
-			class="gridbox"
-			:list="configIndexList"
-			group="configIndexList"
-			:disabled="disableDrag"
-			animation="100"
-			itemKey="name"
-			ghostClass="ghostGridbox"
-			chosenClass="chosenGridbox"
-		>
-			<template #item="{ element, index }">
-				<el-tooltip
-					class="box-item"
-					effect="light"
-					:disabled="!config[element].title"
-					:content="config[element].title"
-					placement="top-start"
-					show-after="800"
-				>
-					<el-switch
-						v-if="config[element].type=='bool'"
-						v-model="config[element].value"
-						:active-text="config[element].name"
-					/>
-					<div v-else>{{ config[element] }} {{ index }}</div>
-				</el-tooltip>
-			</template>
-		</draggable>
+		<el-scrollbar>
+			<draggable
+				class="gridbox"
+				:list="configIndexList"
+				group="configIndexList"
+				:disabled="disableDrag"
+				animation="100"
+				:scroll="true"
+				itemKey="name"
+				ghostClass="ghostGridbox"
+				chosenClass="chosenGridbox"
+			>
+				<template #item="{ element, index }">
+					<el-card
+						shadow="hover"
+					>
+						<el-tooltip
+							class="box-item"
+							effect="light"
+							:disabled="!config[element].title"
+							:content="config[element].title"
+							placement="top-start"
+							show-after="800"
+						>
+							<!-- switch -->
+							<el-switch
+								v-if="config[element].type=='bool'"
+								v-model="config[element].value"
+								:active-text="config[element].name"
+							/>
+							<!-- 下拉框 -->
+							<el-space
+								v-else-if="config[element].type=='select'"
+							>
+								{{ config[element].name }}
+								<el-select
+									v-model="config[element].value"
+								>
+									<el-option
+										v-for="(item,index) in config[element].list"
+										:key="item.key"
+										:label="item.content"
+										:value="index"
+										:disabled="item.disabled"
+									/>
+								</el-select>
+							</el-space>
+							<!-- 数字 -->
+							<div
+								v-else-if="config[element].type=='range'"
+								direction="vertical"
+							>
+								{{ config[element].name }}
+								<el-slider
+									v-model="config[element].value"
+									:min="config[element].start"
+									:max="config[element].end"
+									:step="config[element].step"
+									show-input
+								/>
+							</div>
+							<!-- 其他 -->
+							<div v-else>{{ config[element] }} {{ index }}</div>
+						</el-tooltip>
+					</el-card>
+				</template>
+			</draggable>
+		</el-scrollbar>
 		<!-- <div class="gridbox">
 			<div v-for="configIndex in configIndexList">
 				{{config[configIndex]}}
@@ -105,8 +145,9 @@ export default {
 	.gridbox{
 		display:grid;
 		width:100%;
-		overflow:auto;
-		grid-template-columns:repeat(2,50%);
+		grid-gap: 10px;
+		grid-template-columns:repeat(2,1fr);
+		grid-auto-flow:row dense;
 	}
 	.ghostGridbox{
 		background: #fff;
