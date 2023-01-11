@@ -1,8 +1,13 @@
 import { createApp } from 'vue';
 import './style.css';
 import App from './App.vue';
+import { createPinia } from 'pinia'
 
-createApp(App).mount(
+
+const pinia = createPinia();
+let app=createApp(App);
+app.use(pinia);
+app.mount(
   (() => {
     const app = document.createElement('div');
 	app.style.display="contents";

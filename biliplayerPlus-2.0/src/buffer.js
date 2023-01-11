@@ -5,7 +5,7 @@ import defaultconfig from './setting/defaultconfig'
 let config = GM_listValues(),
 	configIndexList = [],//设置面板顺序
 	gridListSettingMapper = {},//网格列表
-	keyboardBindList = {},//已用按键列表
+	hotkeysManager = {},//快捷键管理器
 	touchList = {};//触屏按下的手指列表
 
 console.log("开始混入设置");
@@ -32,6 +32,6 @@ export {
 	config,
 	configIndexList,//设置面板顺序
 	gridListSettingMapper,//网格列表
-	keyboardBindList,//已用按键列表
+	hotkeysManager,//快捷键管理器
 	touchList,//触屏按下的手指列表
 }

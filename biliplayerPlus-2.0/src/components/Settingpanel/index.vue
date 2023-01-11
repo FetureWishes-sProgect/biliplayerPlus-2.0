@@ -27,48 +27,36 @@
 						<el-tooltip
 							class="box-item"
 							effect="light"
-							:disabled="!config[element].title"
+							:disabled="!disableDrag||!config[element].title"
 							:content="config[element].title"
 							placement="top-start"
 							show-after="800"
 						>
 							<!-- switch -->
-							<el-switch
+							<Switch
 								v-if="config[element].type=='bool'"
-								v-model="config[element].value"
-								:active-text="config[element].name"
+								:setting="config[element]"
+								:disabled="!disableDrag"
 							/>
 							<!-- 下拉框 -->
-							<el-space
-								v-else-if="config[element].type=='select'"
-							>
-								{{ config[element].name }}
-								<el-select
-									v-model="config[element].value"
-								>
-									<el-option
-										v-for="(item,index) in config[element].list"
-										:key="item.key"
-										:label="item.content"
-										:value="index"
-										:disabled="item.disabled"
-									/>
-								</el-select>
-							</el-space>
+							<SelectBox
+								v-if="config[element].type=='select'"
+								:setting="config[element]"
+								:disabled="!disableDrag"
+							/>
 							<!-- 数字 -->
-							<div
+							<NumberBox
 								v-else-if="config[element].type=='range'"
-								direction="vertical"
-							>
-								{{ config[element].name }}
-								<el-slider
-									v-model="config[element].value"
-									:min="config[element].start"
-									:max="config[element].end"
-									:step="config[element].step"
-									show-input
-								/>
-							</div>
+								:setting="config[element]"
+								:disabled="!disableDrag"
+							/>
+							<!-- 快捷键 -->
+							<Keyboard
+								v-else-if="config[element].type=='keyboard'"
+								:setting="config[element]"
+								:keyname="element"
+								:disabled="!disableDrag"
+							/>
 							<!-- 其他 -->
 							<div v-else>{{ config[element] }} {{ index }}</div>
 						</el-tooltip>
@@ -85,18 +73,31 @@
 </template>
 
 <script>
-
+//第三方库
 import draggable from "vuedraggable";
 import SvgIcon from '@jamescoyle/vue-icon'
 import { mdiSort,mdiRefresh, mdiClose } from '@mdi/js'
-import {config,configIndexList} from '../buffer'
-import data from '../setting/data'
-import defaultconfig from '../setting/defaultconfig'
+
+//设置导入
+import {config,configIndexList} from '^/src/buffer'
+import data from '^/src/setting/data'
+import defaultconfig from '^/src/setting/defaultconfig'
+
+// 组件导入
+import Switch from './Switch/index.vue'
+import SelectBox from './SelectBox/index.vue'
+import NumberBox from './NumberBox/index.vue'
+import Keyboard from './Keyboard/index.vue'
+
 
 export default {
 	components: {
 		SvgIcon,
-		draggable
+		draggable,
+		Switch,
+		SelectBox,
+		NumberBox,
+		Keyboard
 	},
 	data() {
 		return {
@@ -108,7 +109,7 @@ export default {
 			config,
 			configIndexList,
 			data,
-			disableDrag:false
+			disableDrag:true,
 		}
 	},
 	methods:{
@@ -118,7 +119,7 @@ export default {
 		closesettingpanel(){
 			this.settingpanelVisible=false;
 		}
-	}
+	},
 }
 </script>
 

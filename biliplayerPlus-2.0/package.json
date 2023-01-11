@@ -20,6 +20,8 @@
     "@mdi/js": "^7.1.96",
     "@shopify/draggable": "^1.0.0-beta.8",
     "element-plus": "^2.2.28",
+    "hotkeys-js": "^3.10.1",
+    "pinia": "^2.0.28",
     "vuedraggable": "^4.1.0"
   }
 }
