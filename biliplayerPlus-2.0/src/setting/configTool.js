@@ -78,7 +78,9 @@ const mixin=(data,mixindata)=>{
 	}
 	return unflattenObj(a);
 }
-export default{
+export {
 	flattenObj,
-	unflattenObj
+	unflattenObj,
+	exportmixin,
+	mixin
 }

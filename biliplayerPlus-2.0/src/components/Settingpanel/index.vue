@@ -5,7 +5,7 @@
 		</div>
 		<div class="btnlist">
 			<svg-icon type="mdi" :path="mdiSort" @click="switchDraggable()"></svg-icon>
-			<svg-icon type="mdi" :path="mdiRefresh"></svg-icon>
+			<svg-icon type="mdi" :path="mdiRefresh" @click="resetSetting()"></svg-icon>
 			<svg-icon type="mdi" :path="mdiClose" @click="closesettingpanel()"></svg-icon>
 		</div>
 		<el-scrollbar>
@@ -14,11 +14,12 @@
 				:list="configIndexList"
 				group="configIndexList"
 				:disabled="disableDrag"
-				animation="100"
+				:animation="100"
 				:scroll="true"
 				itemKey="name"
 				ghostClass="ghostGridbox"
 				chosenClass="chosenGridbox"
+				@end="saveSettingOrder"
 			>
 				<template #item="{ element, index }">
 					<el-card
@@ -30,25 +31,28 @@
 							:disabled="!disableDrag||!config[element].title"
 							:content="config[element].title"
 							placement="top-start"
-							show-after="800"
+							:show-after="800"
 						>
 							<!-- switch -->
 							<Switch
 								v-if="config[element].type=='bool'"
 								:setting="config[element]"
 								:disabled="!disableDrag"
+								@end="saveconfig"
 							/>
 							<!-- 下拉框 -->
 							<SelectBox
 								v-if="config[element].type=='select'"
 								:setting="config[element]"
 								:disabled="!disableDrag"
+								@end="saveconfig"
 							/>
 							<!-- 数字 -->
 							<NumberBox
 								v-else-if="config[element].type=='range'"
 								:setting="config[element]"
 								:disabled="!disableDrag"
+								@end="saveconfig"
 							/>
 							<!-- 快捷键 -->
 							<Keyboard
@@ -56,6 +60,7 @@
 								:setting="config[element]"
 								:keyname="element"
 								:disabled="!disableDrag"
+								@end="saveconfig"
 							/>
 							<!-- 其他 -->
 							<div v-else>{{ config[element] }} {{ index }}</div>
@@ -64,11 +69,6 @@
 				</template>
 			</draggable>
 		</el-scrollbar>
-		<!-- <div class="gridbox">
-			<div v-for="configIndex in configIndexList">
-				{{config[configIndex]}}
-			</div>
-		</div> -->
 	</div>
 </template>
 
@@ -79,7 +79,8 @@ import SvgIcon from '@jamescoyle/vue-icon'
 import { mdiSort,mdiRefresh, mdiClose } from '@mdi/js'
 
 //设置导入
-import {config,configIndexList} from '^/src/buffer'
+import {useConfigStore} from 'store/config-store'
+import {useHotkeysStore} from 'store/hotkeys-store'
 import data from '^/src/setting/data'
 import defaultconfig from '^/src/setting/defaultconfig'
 
@@ -105,19 +106,75 @@ export default {
 			mdiRefresh,
 			mdiClose,
 			defaultconfig,
-			settingpanelVisible:true,
-			config,
-			configIndexList,
+			settingpanelVisible:false,
 			data,
 			disableDrag:true,
+			hotkeymanager:useHotkeysStore()
 		}
+	},
+	mounted(){
+		document.addEventListener("keydown",(e)=>{
+			let valueText="",
+				codeText="";
+			if(e.ctrlKey){
+				valueText+=`Control`;
+				codeText+=`Control`;
+			}
+			if(e.altKey){
+				if(valueText)valueText+=` + `;
+				if(codeText)codeText+=` + `;
+				valueText+=`Alt`;
+				codeText+=`Alt`;
+			}
+			if(e.shiftKey){
+				if(valueText)valueText+=` + `;
+				if(codeText)codeText+=` + `;
+				valueText+=`Shift`;
+				codeText+=`Shift`;
+			}
+			if(e.key!=="Control"&&e.key!=="Alt"&&e.key!=="Shift"){
+				if(valueText)valueText+=` + `;
+				if(codeText)codeText+=` + `;
+				valueText+=e.key;
+				codeText+=e.code;
+				let result=this.hotkeymanager.keyBindOne2One?codeText:valueText;
+				let keyboard=this.hotkeymanager.findFunc(result);
+				if (keyboard) {
+					//触发对应的函数
+					if(keyboard=="openSettingShortcut")
+						this.switchSettingpanelVisible();
+				}
+			}
+			e.stopPropagation();
+			e.preventDefault();
+		},)
+	},
+	computed:{
+		config(){
+			return useConfigStore().config;
+		},
+		configIndexList(){
+			return useConfigStore().configIndexList;
+		},
 	},
 	methods:{
 		switchDraggable(){
 			this.disableDrag=!this.disableDrag
 		},
+		resetSetting(){
+			useConfigStore().reset();
+		},
+		switchSettingpanelVisible(){
+			this.settingpanelVisible=!this.settingpanelVisible;
+		},
 		closesettingpanel(){
 			this.settingpanelVisible=false;
+		},
+		saveSettingOrder(){
+			useConfigStore().saveSettingOrder();
+		},
+		saveconfig(){
+			useConfigStore().saveConfig();
 		}
 	},
 }

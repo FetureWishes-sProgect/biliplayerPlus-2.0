@@ -4,28 +4,35 @@
 		<el-button
 			:disabled="disabled"
 			@keydown="keydown"
+			@blur="blur"
 		>
-			{{ config.keyBindOne2One.value?setting.code:setting.value }}
+			{{ setting[hotkeymanager.nowKeyType] }}
 		</el-button>
 	</el-space>
 </template>
 
 <script>
-import {config} from '^/src/buffer'
+import {useConfigStore} from 'store/config-store'
 import {useHotkeysStore} from 'store/hotkeys-store';
 
 export default {
 	props:["setting","disabled","keyname"],
+	emits:["end"],
 	data(){
 		return {
-			config,
 			hotkeymanager:useHotkeysStore(),
 		}
 	},
+	computed:{
+		config(){
+			return useConfigStore().config;
+		},
+	},
 	mounted(){
-		let keycode=this.config.keyBindOne2One.value?this.setting.code:this.setting.value;
-		let alternative=this.config.keyBindOne2One.value?this.setting.value:this.setting.code;
-		this.hotkeymanager.changebind(this.keyname,keycode,alternative);
+		this.hotkeymanager.changebind(this.keyname,{
+			code:this.setting.code,
+			value:this.setting.value
+		});
 	},
 	methods:{
 		keydown(e){
@@ -52,10 +59,10 @@ export default {
 				if(codeText)codeText+=` + `;
 				valueText+=e.key;
 				codeText+=e.code;
-				let result=this.config.keyBindOne2One.value?codeText:valueText;
+				let result=this.hotkeymanager.keyBindOne2One?codeText:valueText;
 				let keyboard=this.hotkeymanager.findFunc(result);
 				console.log(keyboard);
-				if (keyboard&&keyboard!=this.key) {
+				if (keyboard&&keyboard!=this.keyname) {
 					console.log(`快捷键与 "${this.config[keyboard].name}" 冲突`);
 					valueText=this.setting.value;
 					codeText=this.setting.code;
@@ -66,6 +73,13 @@ export default {
 			}
 			e.stopPropagation();
 			e.preventDefault();
+		},
+		blur(e){
+			this.hotkeymanager.changebind(this.keyname,{
+				code:this.setting.code,
+				value:this.setting.value
+			});
+			this.$emit("end");
 		}
 	}
 }

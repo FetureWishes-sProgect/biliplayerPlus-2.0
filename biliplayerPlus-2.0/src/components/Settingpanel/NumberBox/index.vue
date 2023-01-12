@@ -10,16 +10,18 @@
 			:step="setting.step"
 			:disabled="disabled"
 			show-input
+			@change="$emit('end')"
 		/>
 	</div>
-  </template>
-  
-  <script>
-  export default {
-	  props:["disabled","setting"]
-  }
-  </script>
-  
-  <style>
-  
-  </style>
+</template>
+
+<script>
+export default {
+	props:["disabled","setting"],
+	emits:["end"],
+}
+</script>
+
+<style>
+
+</style>

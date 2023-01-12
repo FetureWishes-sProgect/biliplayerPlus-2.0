@@ -47,7 +47,7 @@ export default{//默认设置
 	keyBindOne2One:{
 		name:"根据键位绑定快捷键",
 		type:"bool",
-		title:"关闭后将根据实际输出进行绑定",
+		title:`关闭后将根据实际输出进行绑定，如"shift + a"和"shift + A"将视为不同的快捷键`,
 		value:true
 	},
 	openSettingShortcut:{//快捷键打开设置

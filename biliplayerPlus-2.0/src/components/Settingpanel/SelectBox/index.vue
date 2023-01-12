@@ -4,6 +4,7 @@
 		<el-select
 			v-model="setting.value"
 			:disabled="disabled"
+			@change="$emit('end')"
 		>
 			<el-option
 				v-for="(item,index) in setting.list"
@@ -14,14 +15,15 @@
 			/>
 		</el-select>
 	</el-space>
-  </template>
+</template>
   
-  <script>
-  export default {
-	  props:["disabled","setting"]
-  }
-  </script>
-  
-  <style>
-  
-  </style>
+<script>
+export default {
+	props:["disabled","setting"],
+	emits:["end"],
+}
+</script>
+
+<style>
+
+</style>
