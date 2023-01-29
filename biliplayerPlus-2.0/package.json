@@ -9,8 +9,10 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@iconify-json/ep": "^1.1.8",
     "@vitejs/plugin-vue": "^4.0.0",
-    "unplugin-auto-import": "^0.12.1",
+    "unplugin-auto-import": "^0.12.2",
+    "unplugin-icons": "^0.15.2",
     "unplugin-vue-components": "^0.22.12",
     "vite": "^4.0.3",
     "vite-plugin-monkey": "^2.10.2"
