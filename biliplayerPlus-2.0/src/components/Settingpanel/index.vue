@@ -1,14 +1,23 @@
 <template>
 	<div class="settingpanel" v-show="settingpanelVisible">
-		<div style="position:relative;width:100%;text-align:center;font-size:16px;line-height:40px;">
+		<div class="settingheader">
 			{{data.settingName}}
 		</div>
 		<div class="btnlist">
-			<svg-icon type="mdi" :path="mdiSort" @click="switchDraggable()"></svg-icon>
+			<!-- <svg-icon type="mdi" :path="mdiSort" @click="switchDraggable()"></svg-icon>
 			<svg-icon type="mdi" :path="mdiRefresh" @click="resetSetting()"></svg-icon>
-			<svg-icon type="mdi" :path="mdiClose" @click="closesettingpanel()"></svg-icon>
+			<svg-icon type="mdi" :path="mdiClose" @click="closesettingpanel()"></svg-icon> -->
+			<div class="closebtn" @click="switchDraggable()">
+				<el-icon><i-ep-grid /></el-icon>
+			</div>
+			<div class="closebtn" @click="resetSetting()">
+				<el-icon><i-ep-refresh-right /></el-icon>
+			</div>
+			<div class="closebtn" @click="closesettingpanel()">
+				<el-icon><i-ep-close-bold /></el-icon>
+			</div>
 		</div>
-		<el-scrollbar>
+		<el-scrollbar style="padding-bottom: 24px;">
 			<draggable
 				class="gridbox"
 				:list="configIndexList"
@@ -188,29 +197,54 @@ export default {
 		min-width:660px;
 		min-height:380px;
 		inset:20%;
-		background:rgba(33,33,33,.9);
-		border:1px solid hsla(0,0%,100%,.12);
+		background:#e5e9ef;
+		border-radius: 2px;
+		box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
+		box-sizing: border-box;
 		z-index:999;
-		box-shadow:rgb(0 0 0 / 25%) 0px 0px 10px 0px;
-		color:white;
+		color:#303133;
+	}
+	.settingheader{
+		position: relative;
+		padding: 10px 20px;
+		width: calc(100% - 40px) ;
+		text-align: center;
+		font-size: 16px;
+		line-height: 40px;
+		color: #606266;
+		word-break: break-all;
 	}
 	.btnlist{
-		position:absolute;
-		font-size:16px;
-		top:10px;
-		right:10px;
+		position: absolute;
+		top: 20px;
+		right: 20px;
+		padding: 0;
+		width: 100px;
+		background: transparent;
+		border: none;
+		outline: none;
+		cursor: pointer;
+		font-size: 16px;
+	}
+	.closebtn{
+		width: 22px;
+		height: 20px;
+		background-color: #d5d5e3;
+		display: inline-block;
+		padding: 4px;
 	}
 	.gridbox{
-		display:grid;
-		width:100%;
+		display: grid;
+		padding: 10px 20px;
+		width: calc(100% - 40px) ;
 		grid-gap: 10px;
-		grid-template-columns:repeat(2,1fr);
-		grid-auto-flow:row dense;
+		grid-template-columns: repeat(2,1fr);
+		grid-auto-flow: row dense;
+		color: #606266;
+		font-size: 14px;
+		word-break: break-all;
 	}
 	.ghostGridbox{
 		background: #fff;
 	}
-	/* .chosenGridbox{
-		background: red;
-	} */
 </style>
