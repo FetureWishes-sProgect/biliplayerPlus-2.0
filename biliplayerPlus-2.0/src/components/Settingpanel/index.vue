@@ -85,13 +85,14 @@
 //第三方库
 import draggable from "vuedraggable";
 import SvgIcon from '@jamescoyle/vue-icon'
-import { mdiSort,mdiRefresh, mdiClose } from '@mdi/js'
+// import { mdiSort,mdiRefresh, mdiClose } from '@mdi/js'
 
 //设置导入
 import {useConfigStore} from 'store/config-store'
 import {useHotkeysStore} from 'store/hotkeys-store'
 import data from '^/src/setting/data'
 import defaultconfig from '^/src/setting/defaultconfig'
+import hotkeysHandler from '^/src/handler/hotkeysHandler'
 
 // 组件导入
 import Switch from './Switch/index.vue'
@@ -111,14 +112,15 @@ export default {
 	},
 	data() {
 		return {
-			mdiSort,
-			mdiRefresh,
-			mdiClose,
+			// mdiSort,
+			// mdiRefresh,
+			// mdiClose,
 			defaultconfig,
 			settingpanelVisible:false,
 			data,
 			disableDrag:true,
-			hotkeymanager:useHotkeysStore()
+			hotkeymanager:useHotkeysStore(),
+			hotkeysHandler
 		}
 	},
 	mounted(){
@@ -150,8 +152,7 @@ export default {
 				let keyboard=this.hotkeymanager.findFunc(result);
 				if (keyboard) {
 					//触发对应的函数
-					if(keyboard=="openSettingShortcut")
-						this.switchSettingpanelVisible();
+					this.hotkeysHandler[keyboard].call(this);
 				}
 			}
 			e.stopPropagation();
