@@ -90,8 +90,8 @@ import SvgIcon from '@jamescoyle/vue-icon'
 //设置导入
 import {useConfigStore} from 'store/config-store'
 import {useHotkeysStore} from 'store/hotkeys-store'
-import data from '^/src/setting/data'
-import defaultconfig from '^/src/setting/defaultconfig'
+import data from 'setting/data'
+import defaultconfig from 'setting/defaultconfig'
 import hotkeysHandler from '^/src/handler/hotkeysHandler'
 
 // 组件导入
@@ -108,7 +108,7 @@ export default {
 		Switch,
 		SelectBox,
 		NumberBox,
-		Keyboard
+		Keyboard,
 	},
 	data() {
 		return {

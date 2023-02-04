@@ -34,6 +34,11 @@ let data={
 	maxInitTimes:6,//最大初始化次数
 	coreVersion:"1.0",//内核版本
 }
-
+for(let i=0;i<data.elementMapper.length;i++) {
+	if(data.elementMapper[i].filter.test(window.location.href)){
+		data.elementMapper=data.elementMapper[i];
+		break;
+	}
+}
 //此部分在脚本运行过程中不会更改
 export default data;
