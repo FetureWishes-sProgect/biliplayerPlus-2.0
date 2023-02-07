@@ -9,9 +9,6 @@ import data from "setting/data";
 import {useHotkeysStore} from 'store/hotkeys-store'
 import {useRuntimeStore} from 'store/runtime-store'
 
-import { message } from "ant-design-vue";
-import "ant-design-vue/lib/message/style/css";
-
 export default {
 	components: {},
 	data() {
@@ -48,10 +45,10 @@ export default {
 					//触发对应的函数
 					//   this.hotkeysHandler[keyboard].call(this);
 					this[keyboard]();
+					e.stopPropagation();
+					e.preventDefault();
 				}
 			}
-			e.stopPropagation();
-			e.preventDefault();
 		});
 	},
 	computed: {
@@ -77,12 +74,30 @@ export default {
 			let videoTag = document.querySelector(data.elementMapper.videoTag);
 			let speed = videoTag.playbackRate;
 			let nextSpeed = new BigNumber(speed).plus(defaultChangeSpeed);
+			let toast=this.$swal.mixin({
+				toast:true,
+				stopKeydownPropagation:false,
+				showConfirmButton:false,
+				focusConfirm:false,
+				timer:2000,
+				width:"fit-content",
+				showClass: {
+					popup: ''
+				}
+			});
 			if (nextSpeed >= 0.1 && nextSpeed <= 16) {
 				videoTag.playbackRate = nextSpeed;
-					message.open({
-					content: `播放速度增加至 ${videoTag.playbackRate}`,
-					key: "0",
-				});
+				if(this.$swal.isVisible()){
+					toast.update({
+						text: `播放速度增加至 ${videoTag.playbackRate}`,
+					});
+					//更新时间
+					toast.increaseTimer(2000-toast.getTimerLeft());
+				}else{
+					toast.fire({
+						text: `播放速度增加至 ${videoTag.playbackRate}`,
+					});
+				}
 			}
 		},
 		speedDown() {
@@ -90,12 +105,30 @@ export default {
 			let videoTag = document.querySelector(data.elementMapper.videoTag);
 			let speed = videoTag.playbackRate;
 			let nextSpeed = new BigNumber(speed).minus(defaultChangeSpeed);
+			let toast=this.$swal.mixin({
+				toast:true,
+				stopKeydownPropagation:false,
+				showConfirmButton:false,
+				focusConfirm:false,
+				timer:2000,
+				width:"fit-content",
+				showClass: {
+					popup: ''
+				}
+			});
 			if (nextSpeed >= 0.1 && nextSpeed <= 16) {
 				videoTag.playbackRate = nextSpeed;
-				message.open({
-					content: `播放速度增加至 ${videoTag.playbackRate}`,
-					key: "0",
-				});
+				if(this.$swal.isVisible()){
+					toast.update({
+						text: `播放速度减少至 ${videoTag.playbackRate}`,
+					});
+					//更新时间
+					toast.increaseTimer(2000-toast.getTimerLeft());
+				}else{
+					toast.fire({
+						text: `播放速度减少至 ${videoTag.playbackRate}`,
+					});
+				}
 			}
 		},
 		switchWide() {
