@@ -79,6 +79,7 @@
 			</draggable>
 		</el-scrollbar>
 	</div>
+	<hotkeysHandler></hotkeysHandler>
 </template>
 
 <script>
@@ -89,16 +90,16 @@ import SvgIcon from '@jamescoyle/vue-icon'
 
 //设置导入
 import {useConfigStore} from 'store/config-store'
-import {useHotkeysStore} from 'store/hotkeys-store'
+import {useRuntimeStore} from 'store/runtime-store'
 import data from 'setting/data'
 import defaultconfig from 'setting/defaultconfig'
-import hotkeysHandler from '^/src/handler/hotkeysHandler'
 
 // 组件导入
 import Switch from './Switch/index.vue'
 import SelectBox from './SelectBox/index.vue'
 import NumberBox from './NumberBox/index.vue'
 import Keyboard from './Keyboard/index.vue'
+import hotkeysHandler from '^/src/handler/hotkeysHandler/index.vue'
 
 
 export default {
@@ -109,6 +110,7 @@ export default {
 		SelectBox,
 		NumberBox,
 		Keyboard,
+		hotkeysHandler
 	},
 	data() {
 		return {
@@ -116,48 +118,9 @@ export default {
 			// mdiRefresh,
 			// mdiClose,
 			defaultconfig,
-			settingpanelVisible:false,
 			data,
 			disableDrag:true,
-			hotkeymanager:useHotkeysStore(),
-			hotkeysHandler
 		}
-	},
-	mounted(){
-		document.addEventListener("keydown",(e)=>{
-			let valueText="",
-				codeText="";
-			if(e.ctrlKey){
-				valueText+=`Control`;
-				codeText+=`Control`;
-			}
-			if(e.altKey){
-				if(valueText)valueText+=` + `;
-				if(codeText)codeText+=` + `;
-				valueText+=`Alt`;
-				codeText+=`Alt`;
-			}
-			if(e.shiftKey){
-				if(valueText)valueText+=` + `;
-				if(codeText)codeText+=` + `;
-				valueText+=`Shift`;
-				codeText+=`Shift`;
-			}
-			if(e.key!=="Control"&&e.key!=="Alt"&&e.key!=="Shift"){
-				if(valueText)valueText+=` + `;
-				if(codeText)codeText+=` + `;
-				valueText+=e.key;
-				codeText+=e.code;
-				let result=this.hotkeymanager.keyBindOne2One?codeText:valueText;
-				let keyboard=this.hotkeymanager.findFunc(result);
-				if (keyboard) {
-					//触发对应的函数
-					this.hotkeysHandler[keyboard].call(this);
-				}
-			}
-			e.stopPropagation();
-			e.preventDefault();
-		},)
 	},
 	computed:{
 		config(){
@@ -166,6 +129,12 @@ export default {
 		configIndexList(){
 			return useConfigStore().configIndexList;
 		},
+		runtimeStore(){
+			return useRuntimeStore();
+		},
+		settingpanelVisible(){
+			return this.runtimeStore.settingpanelVisible;
+		}
 	},
 	methods:{
 		switchDraggable(){
@@ -175,10 +144,10 @@ export default {
 			useConfigStore().reset();
 		},
 		switchSettingpanelVisible(){
-			this.settingpanelVisible=!this.settingpanelVisible;
+			this.runtimeStore.switchSettingpanelVisible();
 		},
 		closesettingpanel(){
-			this.settingpanelVisible=false;
+			this.runtimeStore.closesettingpanel();
 		},
 		saveSettingOrder(){
 			useConfigStore().saveSettingOrder();

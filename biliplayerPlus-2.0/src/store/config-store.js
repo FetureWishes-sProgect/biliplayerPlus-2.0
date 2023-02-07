@@ -13,7 +13,6 @@ export const useConfigStore = defineStore('config', {
 			];
 			//去除新旧设置中的重复项
 			configIndexList=[...new Set(configIndexList)];
-		
 		return {
 			config,
 			configIndexList
