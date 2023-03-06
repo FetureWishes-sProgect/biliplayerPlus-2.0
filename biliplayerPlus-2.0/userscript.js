@@ -1,5 +1,6 @@
 export default {
 	name:"bilibili 播放器增强",
+	outputName:"bilibili 播放器增强",
 	namespace: 'https://github.com/FetureWishes-sProgect/biliplayerPlus-2.0',
 	version:"1.0.0",
 	description:"快捷键设置,自动选择最高清画质、播放、全屏等",

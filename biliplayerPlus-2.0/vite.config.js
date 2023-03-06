@@ -24,7 +24,7 @@ export default defineConfig({
 			entry: 'src/main.js',
 			userscript: userscript,
 			build: {
-				fileName: userscript.version + ".user.js",
+				fileName: userscript.outputName + userscript.version + ".user.js",
 				externalGlobals: {
 					vue: cdn.jsdelivr('Vue', 'dist/vue.global.prod.js'),
 				},

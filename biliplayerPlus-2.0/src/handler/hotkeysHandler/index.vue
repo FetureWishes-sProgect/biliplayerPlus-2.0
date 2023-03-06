@@ -16,6 +16,9 @@ export default {
 	},
 	mounted() {
 		document.addEventListener("keydown", (e) => {
+			//表单输入时不触发
+			if(e.target.tagName=="INPUT")return;
+
 			let valueText = "",
 				codeText = "";
 			if (e.ctrlKey) {
@@ -67,7 +70,55 @@ export default {
 			this.runtimeStore.switchSettingpanelVisible();
 		},
 		switchSpeedChange() {
+			let defaultSpeed = this.config.defaultSpeed.value;
+			let videoTag = document.querySelector(data.elementMapper.videoTag);
+			let nowSpeed = videoTag.playbackRate;
+			let nextSpeed = 1;
+			//切换到倍速模式
+			if(nowSpeed==1){
+				console.log(defaultSpeed);
+				if(this.runtimeStore.bufferSpeed){
+					nextSpeed=this.runtimeStore.bufferSpeed;
+					delete this.runtimeStore.bufferSpeed;
+				}else{
+					nextSpeed=defaultSpeed;
+				}
+			}else{
+				//切换回1倍速
+				nextSpeed=1;
+				//保存当前速度
+				this.runtimeStore.bufferSpeed=nowSpeed;
+			}
 
+			if(nowSpeed==nextSpeed) return;
+
+			if (nextSpeed >= 0.1 && nextSpeed <= 16) {
+				//改变速度
+				videoTag.playbackRate = nextSpeed;
+				//显示
+				let toast=this.$swal.mixin({
+					toast:true,
+					stopKeydownPropagation:false,
+					showConfirmButton:false,
+					focusConfirm:false,
+					timer:2000,
+					width:"fit-content",
+					showClass: {
+						popup: ''
+					}
+				});
+				if(this.$swal.isVisible()){
+					toast.update({
+						text: `播放速度切换至 ${videoTag.playbackRate}`,
+					});
+					//更新时间
+					toast.increaseTimer(2000-toast.getTimerLeft());
+				}else{
+					toast.fire({
+						text: `播放速度切换至 ${videoTag.playbackRate}`,
+					});
+				}
+			}
 		},
 		speedUp() {
 			let defaultChangeSpeed = this.config.defaultChangeSpeed.value;

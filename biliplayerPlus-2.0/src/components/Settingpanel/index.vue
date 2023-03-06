@@ -79,7 +79,7 @@
 			</draggable>
 		</el-scrollbar>
 	</div>
-	<hotkeysHandler></hotkeysHandler>
+	<hotkeysHandler ref="hotkeysHandler"></hotkeysHandler>
 </template>
 
 <script>
@@ -92,7 +92,6 @@ import SvgIcon from '@jamescoyle/vue-icon'
 import {useConfigStore} from 'store/config-store'
 import {useRuntimeStore} from 'store/runtime-store'
 import data from 'setting/data'
-import defaultconfig from 'setting/defaultconfig'
 
 // 组件导入
 import Switch from './Switch/index.vue'
@@ -117,9 +116,43 @@ export default {
 			// mdiSort,
 			// mdiRefresh,
 			// mdiClose,
-			defaultconfig,
 			data,
 			disableDrag:true,
+		}
+	},
+	mounted(){
+		let iswideScreen=()=>{//是否是宽屏
+			let flag=false;
+			let element=document.querySelector(this.data.elementMapper.showElement).parentElement;
+			if(element.classList.contains("mode-widescreen")||element.dataset.screen=="wide"){
+				flag=true;
+			}
+			return flag;
+		}
+		let isfullScreen=()=>{//是否是全屏
+			let flag=false;
+			let element=document.querySelector(this.data.elementMapper.showElement).parentElement;
+			if(element.classList.contains("mode-fullscreen")||element.dataset.screen=="full"){
+				flag=true;
+			}
+			return flag;
+		}
+		switch (this.config.defaultScreenSize.list[this.config.defaultScreenSize.value].key) {
+			case "webFullScreen":
+				isfullScreen()?null:this.$refs.hotkeysHandler.switchWebFullScreen();
+				break;
+			case "widewide":
+				iswideScreen()?null:this.$refs.hotkeysHandler.switchWide();
+				break;
+			case "default":
+				if(isfullScreen()){
+					this.$refs.hotkeysHandler.switchWebFullScreen();
+				}else if(iswideScreen()){
+					this.$refs.hotkeysHandler.switchWide();
+				}
+				break;
+			default:
+				break;
 		}
 	},
 	computed:{
