@@ -6,7 +6,7 @@ import Settingpanel from './components/Settingpanel/index.vue';
 </script>
 
 <template>
-  <Settingpanel msg="Vite + Vue" />
+  <Settingpanel/>
 </template>
 
 

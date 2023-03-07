@@ -1,5 +1,5 @@
 <template>
-	<div class="settingpanel" v-show="settingpanelVisible">
+	<div class="settingpanel" v-show="settingpanelVisible" v-drag="'.settingheader'">
 		<div class="settingheader">
 			{{data.settingName}}
 		</div>
@@ -18,14 +18,64 @@
 			</div>
 		</div>
 		<el-scrollbar style="padding-bottom: 24px;">
+			<Sortable
+				:disabled="disableDrag"
+				:list="configIndexList"
+			>
+				<template #item="{ element, index }">
+					<el-card
+						shadow="hover"
+					>
+						<el-tooltip
+							class="box-item"
+							effect="light"
+							:disabled="!disableDrag||!config[element].title"
+							:content="config[element].title"
+							placement="top-start"
+							:show-after="800"
+						>
+							<!-- switch -->
+							<Switch
+								v-if="config[element].type=='bool'"
+								:setting="config[element]"
+								:disabled="!disableDrag"
+								@end="saveconfig"
+							/>
+							<!-- 下拉框 -->
+							<SelectBox
+								v-if="config[element].type=='select'"
+								:setting="config[element]"
+								:disabled="!disableDrag"
+								@end="saveconfig"
+							/>
+							<!-- 数字 -->
+							<NumberBox
+								v-else-if="config[element].type=='range'"
+								:setting="config[element]"
+								:disabled="!disableDrag"
+								@end="saveconfig"
+							/>
+							<!-- 快捷键 -->
+							<Keyboard
+								v-else-if="config[element].type=='keyboard'"
+								:setting="config[element]"
+								:keyname="element"
+								:disabled="!disableDrag"
+								@end="saveconfig"
+							/>
+							<!-- 其他 -->
+							<div v-else>{{ config[element] }} {{ index }}</div>
+						</el-tooltip>
+					</el-card>
+				</template>
+			</Sortable>
 			<draggable
 				class="gridbox"
-				:list="configIndexList"
+				v-model="configIndexList"
 				group="configIndexList"
 				:disabled="disableDrag"
 				:animation="100"
 				:scroll="true"
-				itemKey="name"
 				ghostClass="ghostGridbox"
 				chosenClass="chosenGridbox"
 				@end="saveSettingOrder"
@@ -99,6 +149,7 @@ import SelectBox from './SelectBox/index.vue'
 import NumberBox from './NumberBox/index.vue'
 import Keyboard from './Keyboard/index.vue'
 import hotkeysHandler from '^/src/handler/hotkeysHandler/index.vue'
+import Sortable from '../Tools/Sortable/index.vue'
 
 
 export default {
@@ -109,7 +160,8 @@ export default {
 		SelectBox,
 		NumberBox,
 		Keyboard,
-		hotkeysHandler
+		hotkeysHandler,
+		Sortable
 	},
 	data() {
 		return {
@@ -249,5 +301,11 @@ export default {
 	}
 	.ghostGridbox{
 		background: #fff;
+	}
+	.flip-list-move {
+		transition: transform 0.5s;
+	}
+	.no-move {
+		transition: transform 0s;
 	}
 </style>
