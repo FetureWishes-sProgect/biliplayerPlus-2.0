@@ -1,33 +1,36 @@
 <template>
-	<TransitionGroup name="sorttransition">
+	<TransitionGroup name="sorttransition" appear>
 		<div
 			v-for="(element,index) in list"
 			:key="index"
 			:ref="'sortable'+index"
-			:style="dragStartData.index==index?`transform:translate(${dragStartData.movex}px, ${dragStartData.movey}px)`:''"
-			:class="dragStartData.index==index?`selectedSortable`:''"
 			@mousedown="mousedown($event,index)"
-			@dragenter="dragenter"
-			@drop="drop"
 		>
-			<slot
-				name="item"
-				:element="element"
-				:index="index"
+			<div
+				:style="dragStartData.index==index?`transform:translate(${dragStartData.movex}px, ${dragStartData.movey}px)`:''"
+				:class="['item',dragStartData.index==index?`selectedSortable`:'']"
 			>
-				aaa
-			</slot>
+				<slot
+					name="item"
+					:element="element"
+					:index="index"
+				>
+					aaa
+				</slot>
+			</div>
 		</div>
 	</TransitionGroup>
 </template>
 
 <script>
+import { TransitionGroup } from 'vue';
+
 export default {
 	props:{
 		list:[Array],
 		disabled:Boolean
 	},
-	components: {},
+	components: { TransitionGroup },
 	data() {
 		return {
 			dragStartData:{
@@ -65,26 +68,93 @@ export default {
 			document.addEventListener("mousemove", this.mousemove);
 			document.addEventListener("mouseup", this.mouseup);
 			e.preventDefault();
-		},
-		dragenter(e){
-			console.log("dragenter",e.pageX,e.pageY,this.dragStartData.x,this.dragStartData.y);
+			e.stopPropagation();
 		},
 		mouseup(e){
 			document.removeEventListener("mousemove", this.mousemove);
 			document.removeEventListener("mouseup", this.mouseup);
 			let mousex=e.pageX,
-				mousey=e.pageY;
+				mousey=e.pageY,
+				lastRange=null;
 			for(let i=0;i<this.list.length;i++){
 				let left=this.$refs["sortable"+i][0].getBoundingClientRect().left,
+					right=this.$refs["sortable"+i][0].getBoundingClientRect().right,
 					top=this.$refs["sortable"+i][0].getBoundingClientRect().top,
-					width=this.$refs["sortable"+i][0].getBoundingClientRect().width,
-					height=this.$refs["sortable"+i][0].getBoundingClientRect().height;
-				console.log(
+					bottom=this.$refs["sortable"+i][0].getBoundingClientRect().bottom;
+				if(mousey<bottom){
+					if(top<mousey&&left<mousex&&mousex<right){
+						//在里面
+						let listItem=this.list[this.dragStartData.index];
+						if(this.dragStartData.index<i){
+							this.list.splice(i+1,0,listItem);
+							this.list.splice(this.dragStartData.index,1);
+						}else{
+							this.list.splice(i,0,listItem);
+							this.list.splice(this.dragStartData.index+1,1);
+						}
+						console.log("找到了，在"+i+"里面");
+						break;
+					}else{
+						//不在里面，判断前后之间的关系
+						if(lastRange){
+							if(lastRange.left==left&&lastRange.right==right){
+								//上下关系，上下大小一样
+								let listItem=this.list[this.dragStartData.index];
+								this.list.splice(i,0,listItem);
+								if(this.dragStartData.index<i){
+									this.list.splice(this.dragStartData.index,1);
+								}else{
+									this.list.splice(this.dragStartData.index+1,1);
+								}
+								console.log("在"+i+"上方");
+								break;
+							}else if(lastRange.top==top&&lastRange.bottom==bottom){
+								//左右关系
+								let listItem=this.list[this.dragStartData.index];
+								this.list.splice(i,0,listItem);
+								if(this.dragStartData.index<i){
+									this.list.splice(this.dragStartData.index,1);
+								}else{
+									this.list.splice(this.dragStartData.index+1,1);
+								}
+								console.log("在"+i+"左侧");
+								break;
+							}else if(lastRange.bottom<top){
+								//换行关系，去除掉上下关系之后的
+								if(mousex>lastRange.right||mousex<left){
+									let listItem=this.list[this.dragStartData.index];
+									this.list.splice(i,0,listItem);
+									if(this.dragStartData.index<i){
+										this.list.splice(this.dragStartData.index,1);
+									}else{
+										this.list.splice(this.dragStartData.index+1,1);
+									}
+									console.log("在"+i+"之前换行");
+									break;
+								}
+							}
+						}else if(mousex<left||mousey<top){
+							//第一个元素之前
+							let listItem=this.list[this.dragStartData.index];
+							this.list.splice(i,0,listItem);
+							if(this.dragStartData.index<i){
+								this.list.splice(this.dragStartData.index,1);
+							}else{
+								this.list.splice(this.dragStartData.index+1,1);
+							}
+							console.log("在"+i+"之前");
+							break;
+						}
+					}
+				}
+				
+
+				lastRange={
 					left,
+					right,
 					top,
-					width,
-					height
-				);
+					bottom
+				}
 			}
 			this.dragStartData={
 				index:-1,
@@ -101,15 +171,18 @@ export default {
 		position: relative;
 		z-index: 100;
 	}
-	.sorttransition-fade-enter-active {
-		transition: all .3s ease;
+	.item{
+		margin-top: 20px;
 	}
-	.sorttransition-fade-leave-active {
-		transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+	.sorttransition-enter-active, .sorttransition-leave-active {
+		transition:all 2s;
 	}
-	.sorttransition-fade-enter, .sorttransition-fade-leave-to{
+	.sorttransition-enter, .sorttransition-leave-to{
 		height: 0;
 		width: 0;
 		opacity: 0;
+	}
+	.sorttransition-move {
+		transition: transform 2s;
 	}
 </style>
