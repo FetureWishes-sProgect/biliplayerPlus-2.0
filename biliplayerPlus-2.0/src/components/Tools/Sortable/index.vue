@@ -1,14 +1,19 @@
 <template>
-	<TransitionGroup name="sorttransition" appear>
+	<TransitionGroup
+		name="sorttransition"
+	>
 		<div
 			v-for="(element,index) in list"
-			:key="index"
+			:key="JSON.stringify(element)"
 			:ref="'sortable'+index"
 			@mousedown="mousedown($event,index)"
+			class="item"
 		>
 			<div
-				:style="dragStartData.index==index?`transform:translate(${dragStartData.movex}px, ${dragStartData.movey}px)`:''"
-				:class="['item',dragStartData.index==index?`selectedSortable`:'']"
+				:class="[
+					dragStartData.index==index?`selectedSortable`:'',
+					'usetransitionInSort'
+				]"
 			>
 				<slot
 					name="item"
@@ -38,7 +43,12 @@ export default {
 				x:0,
 				y:0,
 			},
-			mousemovetime:0
+			dragEndData:{
+				startIndex:-1,
+				movex:0,
+				movey:0,
+			},
+			mousemovetime:0,
 		};
 	},
 	mounted() {
@@ -55,6 +65,7 @@ export default {
 					movey=e.pageY-this.dragStartData.y;
 				let node=document.querySelector(".selectedSortable");
 				node.style.transform=`translate(${movex}px, ${movey}px)`;
+				node.style.transition=`unset`;
 				this.mousemovetime = time;
 			}
 		},
@@ -76,6 +87,14 @@ export default {
 			let mousex=e.pageX,
 				mousey=e.pageY,
 				lastRange=null;
+			let movex=e.pageX-this.dragStartData.x,
+				movey=e.pageY-this.dragStartData.y;
+			this.dragEndData = {
+				startIndex:this.dragStartData.index,
+				movex,
+				movey
+			};
+
 			for(let i=0;i<this.list.length;i++){
 				let left=this.$refs["sortable"+i][0].getBoundingClientRect().left,
 					right=this.$refs["sortable"+i][0].getBoundingClientRect().right,
@@ -147,7 +166,6 @@ export default {
 						}
 					}
 				}
-				
 
 				lastRange={
 					left,
@@ -156,11 +174,21 @@ export default {
 					bottom
 				}
 			}
+			
+			//用以后续恢复
+			let node=document.querySelector(".selectedSortable");
+			console.log(node,movex,movey);
+			node.style="";
+			this.afterMove();
+		},
+		afterMove(){
+			console.log("还原dragStartData");
 			this.dragStartData={
 				index:-1,
 				x:0,
 				y:0,
 			}
+			// this.dragEndData = {movex:0,movey:0};
 		}
 	},
 };
@@ -170,12 +198,16 @@ export default {
 	.selectedSortable{
 		position: relative;
 		z-index: 100;
+		transform: translate(0,0);
+	}
+	.usetransitionInSort{
+		transition: all 2s;
 	}
 	.item{
 		margin-top: 20px;
 	}
 	.sorttransition-enter-active, .sorttransition-leave-active {
-		transition:all 2s;
+		transition:all 1s;
 	}
 	.sorttransition-enter, .sorttransition-leave-to{
 		height: 0;
