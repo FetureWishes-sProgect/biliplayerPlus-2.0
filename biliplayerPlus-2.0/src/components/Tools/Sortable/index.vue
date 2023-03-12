@@ -7,7 +7,6 @@
 			:key="JSON.stringify(element)"
 			:ref="'sortable'+index"
 			@mousedown="mousedown($event,index)"
-			class="item"
 		>
 			<div
 				:class="[
@@ -20,7 +19,7 @@
 					:element="element"
 					:index="index"
 				>
-					aaa
+					no data
 				</slot>
 			</div>
 		</div>
@@ -52,8 +51,6 @@ export default {
 		};
 	},
 	mounted() {
-	},
-	updated(){
 	},
 	computed: {
 	},
@@ -177,9 +174,10 @@ export default {
 			
 			//用以后续恢复
 			let node=document.querySelector(".selectedSortable");
-			console.log(node,movex,movey);
-			node.style="";
-			this.afterMove();
+			this.$nextTick(()=>{
+				node.style=``;
+				this.afterMove();
+			});
 		},
 		afterMove(){
 			console.log("还原dragStartData");
@@ -201,11 +199,9 @@ export default {
 		transform: translate(0,0);
 	}
 	.usetransitionInSort{
-		transition: all 2s;
+		transition: all .5s;
 	}
-	.item{
-		margin-top: 20px;
-	}
+
 	.sorttransition-enter-active, .sorttransition-leave-active {
 		transition:all 1s;
 	}
@@ -215,6 +211,6 @@ export default {
 		opacity: 0;
 	}
 	.sorttransition-move {
-		transition: transform 2s;
+		transition: transform .5s;
 	}
 </style>

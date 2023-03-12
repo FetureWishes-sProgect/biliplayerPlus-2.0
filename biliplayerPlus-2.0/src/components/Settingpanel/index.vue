@@ -18,57 +18,59 @@
 			</div>
 		</div>
 		<el-scrollbar style="padding-bottom: 24px;">
-			<Sortable
-				:disabled="disableDrag"
-				:list="configIndexList"
-			>
-				<template #item="{ element, index }">
-					<el-card
-						shadow="hover"
-					>
-						<el-tooltip
-							class="box-item"
-							effect="light"
-							:disabled="!disableDrag||!config[element].title"
-							:content="config[element].title"
-							placement="top-start"
-							:show-after="800"
+			<div class="gridbox">
+				<Sortable
+					:disabled="disableDrag"
+					:list="configIndexList"
+				>
+					<template #item="{ element, index }">
+						<el-card
+							shadow="hover"
 						>
-							<!-- switch -->
-							<Switch
-								v-if="config[element].type=='bool'"
-								:setting="config[element]"
-								:disabled="!disableDrag"
-								@end="saveconfig"
-							/>
-							<!-- 下拉框 -->
-							<SelectBox
-								v-if="config[element].type=='select'"
-								:setting="config[element]"
-								:disabled="!disableDrag"
-								@end="saveconfig"
-							/>
-							<!-- 数字 -->
-							<NumberBox
-								v-else-if="config[element].type=='range'"
-								:setting="config[element]"
-								:disabled="!disableDrag"
-								@end="saveconfig"
-							/>
-							<!-- 快捷键 -->
-							<Keyboard
-								v-else-if="config[element].type=='keyboard'"
-								:setting="config[element]"
-								:keyname="element"
-								:disabled="!disableDrag"
-								@end="saveconfig"
-							/>
-							<!-- 其他 -->
-							<div v-else>{{ config[element] }} {{ index }}</div>
-						</el-tooltip>
-					</el-card>
-				</template>
-			</Sortable>
+							<el-tooltip
+								class="box-item"
+								effect="light"
+								:disabled="!disableDrag||!config[element].title"
+								:content="config[element].title"
+								placement="top-start"
+								:show-after="800"
+							>
+								<!-- switch -->
+								<Switch
+									v-if="config[element].type=='bool'"
+									:setting="config[element]"
+									:disabled="!disableDrag"
+									@end="saveconfig"
+								/>
+								<!-- 下拉框 -->
+								<SelectBox
+									v-if="config[element].type=='select'"
+									:setting="config[element]"
+									:disabled="!disableDrag"
+									@end="saveconfig"
+								/>
+								<!-- 数字 -->
+								<NumberBox
+									v-else-if="config[element].type=='range'"
+									:setting="config[element]"
+									:disabled="!disableDrag"
+									@end="saveconfig"
+								/>
+								<!-- 快捷键 -->
+								<Keyboard
+									v-else-if="config[element].type=='keyboard'"
+									:setting="config[element]"
+									:keyname="element"
+									:disabled="!disableDrag"
+									@end="saveconfig"
+								/>
+								<!-- 其他 -->
+								<div v-else>{{ config[element] }} {{ index }}</div>
+							</el-tooltip>
+						</el-card>
+					</template>
+				</Sortable>
+			</div>
 			<draggable
 				class="gridbox"
 				v-model="configIndexList"
