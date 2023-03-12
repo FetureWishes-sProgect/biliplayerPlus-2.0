@@ -1,5 +1,6 @@
 <template>
-	<div class="settingpanel" v-show="settingpanelVisible" v-drag="'.settingheader'">
+	<div class="settingpanel" v-show="settingpanelVisible" @mousedown="mousedown" >
+		<!-- v-drag="'.settingheader'" -->
 		<div class="settingheader">
 			{{data.settingName}}
 		</div>
@@ -170,6 +171,8 @@ export default {
 			// mdiClose,
 			data,
 			disableDrag:true,
+			dragData:{},
+			mousemovetime:0,
 		}
 	},
 	mounted(){
@@ -239,7 +242,35 @@ export default {
 		},
 		saveconfig(){
 			useConfigStore().saveConfig();
-		}
+		},
+
+		
+		mousemove(e){
+			let time=this.mousemovetime++%10;
+			if(time==0){
+				let movex=e.pageX-this.dragData.x,
+					movey=e.pageY-this.dragData.y;
+				let node=document.querySelector(".settingpanel");
+				node.style.transform=`translate(${movex}px, ${movey}px)`;
+				node.style.transition=`unset`;
+				this.mousemovetime = time;
+			}
+		},
+		mousedown(e){
+			this.dragData={
+				x:e.pageX,
+				y:e.pageY
+			}
+			document.addEventListener("mousemove", this.mousemove);
+			document.addEventListener("mouseup", this.mouseup);
+			e.preventDefault();
+			e.stopPropagation();
+		},
+		mouseup(e){
+			document.removeEventListener("mousemove", this.mousemove);
+			document.removeEventListener("mouseup", this.mouseup);
+			
+		},
 	},
 }
 </script>
