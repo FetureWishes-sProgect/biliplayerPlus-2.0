@@ -67,6 +67,8 @@ export default {
 			}
 		},
 		mousedown(e,index){
+			if(this.disabled)return;
+			if(e.button!=0)return;
 			this.dragStartData={
 				...this.dragStartData,
 				index,

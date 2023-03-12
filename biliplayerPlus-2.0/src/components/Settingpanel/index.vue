@@ -1,7 +1,7 @@
 <template>
-	<div class="settingpanel" v-show="settingpanelVisible" @mousedown="mousedown" >
+	<div class="settingpanel" v-show="settingpanelVisible">
 		<!-- v-drag="'.settingheader'" -->
-		<div class="settingheader">
+		<div class="settingheader" @mousedown="mousedown" >
 			{{data.settingName}}
 		</div>
 		<div class="btnlist">
@@ -271,6 +271,7 @@ export default {
 			}
 		},
 		mousedown(e){
+			if(e.button!=0)return;
 			this.dragData={
 				x:e.pageX,
 				y:e.pageY
@@ -305,6 +306,7 @@ export default {
 		box-sizing: border-box;
 		z-index:999;
 		color:#303133;
+		user-select:none;
 	}
 	.settingheader{
 		position: relative;
@@ -315,6 +317,7 @@ export default {
 		line-height: 40px;
 		color: #606266;
 		word-break: break-all;
+		cursor: move;
 	}
 	.btnlist{
 		position: absolute;
@@ -329,10 +332,10 @@ export default {
 		font-size: 16px;
 	}
 	.closebtn{
+		display: inline-block;
 		width: 22px;
 		height: 20px;
 		background-color: #d5d5e3;
-		display: inline-block;
 		padding: 4px;
 	}
 	.gridbox{
