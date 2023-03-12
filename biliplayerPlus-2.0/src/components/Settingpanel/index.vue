@@ -265,7 +265,7 @@ export default {
 				node.style.transform=`translate(${movex}px, ${movey}px)`;
 				node.style.transition=`unset`;
 				this.mousemovetime = time;
-				this.moveData = {x:movex,y:movey};
+				// this.moveData = {x:movex,y:movey};
 			}
 		},
 		mousedown(e){
@@ -281,7 +281,9 @@ export default {
 		mouseup(e){
 			document.removeEventListener("mousemove", this.mousemove);
 			document.removeEventListener("mouseup", this.mouseup);
-			this.lastDragData = {...this.moveData};
+			let movex=this.lastDragData.x+e.pageX-this.dragData.x,
+				movey=this.lastDragData.y+e.pageY-this.dragData.y;
+			this.lastDragData = {x:movex,y:movey};
 		},
 	},
 }
