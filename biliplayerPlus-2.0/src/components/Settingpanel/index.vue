@@ -171,7 +171,18 @@ export default {
 			// mdiClose,
 			data,
 			disableDrag:true,
-			dragData:{},
+			dragData:{
+				x:null,
+				y:null
+			},
+			moveData:{
+				x:null,
+				y:null
+			},
+			lastDragData:{
+				x:0,
+				y:0
+			},
 			mousemovetime:0,
 		}
 	},
@@ -248,12 +259,13 @@ export default {
 		mousemove(e){
 			let time=this.mousemovetime++%10;
 			if(time==0){
-				let movex=e.pageX-this.dragData.x,
-					movey=e.pageY-this.dragData.y;
+				let movex=this.lastDragData.x+e.pageX-this.dragData.x,
+					movey=this.lastDragData.y+e.pageY-this.dragData.y;
 				let node=document.querySelector(".settingpanel");
 				node.style.transform=`translate(${movex}px, ${movey}px)`;
 				node.style.transition=`unset`;
 				this.mousemovetime = time;
+				this.moveData = {x:movex,y:movey};
 			}
 		},
 		mousedown(e){
@@ -269,7 +281,7 @@ export default {
 		mouseup(e){
 			document.removeEventListener("mousemove", this.mousemove);
 			document.removeEventListener("mouseup", this.mouseup);
-			
+			this.lastDragData = {...this.moveData};
 		},
 	},
 }
