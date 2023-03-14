@@ -68,10 +68,13 @@ export default {
 			}
 		},
 		mousedown(e,index){
-			if(this.disabled)return;
+			//左键点击
 			if(e.button!=0)return;
+			//是否禁用
+			if(this.disabled)return;
+			//是否正在拖拽
+			if(this.dragStartData.index!=-1)return;
 			this.dragStartData={
-				...this.dragStartData,
 				index,
 				x:e.pageX,
 				y:e.pageY
@@ -175,9 +178,9 @@ export default {
 					bottom
 				}
 			}
-			console.log(endindex);
 			//用以后续恢复
 			let node=document.querySelector(".selectedSortable");
+			node.addEventListener("transitionend",this.afterMove);
 			this.$nextTick(()=>{
 				node.style=``;
 			});
@@ -187,14 +190,24 @@ export default {
 				movey
 			};
 		},
-		afterMove(){
-			console.log("还原dragStartData");
+		afterMove(e){
+			//不监听子元素的事件
+			if(e.target!==e.currentTarget)return;
+
+			console.log("还原dragData");
+			let node=document.querySelector(".selectedSortable");
+			node.removeEventListener("transitionend",this.afterMove);
+
 			this.dragStartData={
 				index:-1,
 				x:0,
 				y:0,
 			}
-			// this.dragEndData = {movex:0,movey:0};
+			this.dragEndData = {
+				startIndex:-1,
+				movex:0,
+				movey:0
+			};
 		}
 	},
 };
