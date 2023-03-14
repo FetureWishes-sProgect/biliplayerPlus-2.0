@@ -6,6 +6,7 @@
 			v-for="(element,index) in list"
 			:key="JSON.stringify(element)"
 			:ref="'sortable'+index"
+			:class="dragEndData.startIndex==index?`selectedSortableContainer`:``"
 			@mousedown="mousedown($event,index)"
 		>
 			<div
@@ -88,11 +89,7 @@ export default {
 				lastRange=null;
 			let movex=e.pageX-this.dragStartData.x,
 				movey=e.pageY-this.dragStartData.y;
-			this.dragEndData = {
-				startIndex:this.dragStartData.index,
-				movex,
-				movey
-			};
+			let endindex=this.dragStartData.index;
 
 			for(let i=0;i<this.list.length;i++){
 				let left=this.$refs["sortable"+i][0].getBoundingClientRect().left,
@@ -110,6 +107,7 @@ export default {
 							this.list.splice(i,0,listItem);
 							this.list.splice(this.dragStartData.index+1,1);
 						}
+						endindex=i;
 						console.log("找到了，在"+i+"里面");
 						break;
 					}else{
@@ -124,6 +122,7 @@ export default {
 								}else{
 									this.list.splice(this.dragStartData.index+1,1);
 								}
+								endindex=i;
 								console.log("在"+i+"上方");
 								break;
 							}else if(lastRange.top==top&&lastRange.bottom==bottom){
@@ -135,6 +134,7 @@ export default {
 								}else{
 									this.list.splice(this.dragStartData.index+1,1);
 								}
+								endindex=i;
 								console.log("在"+i+"左侧");
 								break;
 							}else if(lastRange.bottom<top){
@@ -147,6 +147,7 @@ export default {
 									}else{
 										this.list.splice(this.dragStartData.index+1,1);
 									}
+									endindex=i;
 									console.log("在"+i+"之前换行");
 									break;
 								}
@@ -160,6 +161,7 @@ export default {
 							}else{
 								this.list.splice(this.dragStartData.index+1,1);
 							}
+							endindex=i;
 							console.log("在"+i+"之前");
 							break;
 						}
@@ -173,13 +175,17 @@ export default {
 					bottom
 				}
 			}
-			
+			console.log(endindex);
 			//用以后续恢复
 			let node=document.querySelector(".selectedSortable");
 			this.$nextTick(()=>{
 				node.style=``;
-				this.afterMove();
 			});
+			this.dragEndData = {
+				startIndex:endindex,
+				movex,
+				movey
+			};
 		},
 		afterMove(){
 			console.log("还原dragStartData");
@@ -195,13 +201,12 @@ export default {
 </script>
 
 <style scoped>
-	.selectedSortable{
-		position: relative;
-		z-index: 100;
-		transform: translate(0,0);
-	}
 	.usetransitionInSort{
-		transition: all .5s;
+		transition: all 5s;
+	}
+	.sorttransition-move {
+		z-index: 50;
+		transition: transform 5s;
 	}
 
 	.sorttransition-enter-active, .sorttransition-leave-active {
@@ -212,7 +217,12 @@ export default {
 		width: 0;
 		opacity: 0;
 	}
-	.sorttransition-move {
-		transition: transform .5s;
+	.selectedSortableContainer{
+		z-index: 100;
+	}
+	.selectedSortable{
+		position: relative;
+		z-index: 100;
+		transform: translate(0,0);
 	}
 </style>
