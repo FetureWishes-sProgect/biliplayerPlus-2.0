@@ -33,7 +33,11 @@ import { TransitionGroup } from 'vue';
 export default {
 	props:{
 		list:[Array],
-		disabled:Boolean
+		disabled:Boolean,
+		duration:{
+			type:Number,
+			default:0.5
+		}
 	},
 	components: { TransitionGroup },
 	data() {
@@ -54,6 +58,9 @@ export default {
 	mounted() {
 	},
 	computed: {
+		durationCssStr(){
+			return this.duration+"s";
+		}
 	},
 	methods: {
 		mousemove(e){
@@ -215,11 +222,11 @@ export default {
 
 <style scoped>
 	.usetransitionInSort{
-		transition: all 5s;
+		transition: all v-bind("durationCssStr");
 	}
 	.sorttransition-move {
 		z-index: 50;
-		transition: transform 5s;
+		transition: transform v-bind("durationCssStr");
 	}
 
 	.sorttransition-enter-active, .sorttransition-leave-active {
