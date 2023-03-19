@@ -63,13 +63,84 @@ export default {
 		}
 	},
 	methods: {
+		//获取父元素
+		getParentAutoScrollElement(el, includeSelf) {
+			function css(el, prop, val) {
+				let style = el && el.style;
+
+				if (style) {
+					if (val === void 0) {
+						if (document.defaultView && document.defaultView.getComputedStyle) {
+							val = document.defaultView.getComputedStyle(el, '');
+						}
+						else if (el.currentStyle) {
+							val = el.currentStyle;
+						}
+
+						return prop === void 0 ? val : val[prop];
+					}
+					else {
+						if (!(prop in style) && prop.indexOf('webkit') === -1) {
+							prop = '-webkit-' + prop;
+						}
+
+						style[prop] = val + (typeof val === 'string' ? '' : 'px');
+					}
+				}
+			}
+			function getWindowScrollingElement() {
+				let scrollingElement = document.scrollingElement;
+
+				if (scrollingElement) {
+					return scrollingElement
+				} else {
+					return document.documentElement
+				}
+			}
+			// skip to window
+			if (!el || !el.getBoundingClientRect) return getWindowScrollingElement();
+
+			let elem = el;
+			let gotSelf = false;
+			do {
+				// we don't need to get elem css if it isn't even overflowing in the first place (performance)
+				if (elem.clientWidth < elem.scrollWidth || elem.clientHeight < elem.scrollHeight) {
+					let elemCSS = css(elem);
+					if (
+						elem.clientWidth < elem.scrollWidth && (elemCSS.overflowX == 'auto' || elemCSS.overflowX == 'scroll') ||
+						elem.clientHeight < elem.scrollHeight && (elemCSS.overflowY == 'auto' || elemCSS.overflowY == 'scroll')
+					) {
+						if (!elem.getBoundingClientRect || elem === document.body) return getWindowScrollingElement();
+
+						if (gotSelf || includeSelf) return elem;
+						gotSelf = true;
+					}
+				}
+			/* jshint boss:true */
+			} while (elem = elem.parentNode);
+
+			return getWindowScrollingElement();
+		},
+		scroll(e){
+			if(this.dragEndData.startIndex!==-1)return;
+			let scrolly = e.target.scrollTop-this.dragStartData.scrollTop,
+				scrollx=e.target.scrollLeft-this.dragStartData.scrollLeft;
+			let node=document.querySelector(".selectedSortable")
+			node.style.setProperty('--scrollx', `${scrollx}px`);
+			node.style.setProperty('--scrolly', `${scrolly}px`);
+			node.style.transform=`translate(calc(var(--movex) + var(--scrollx)), calc(var(--movey) + var(--scrolly)))`;
+			node.style.transition=`unset`;
+			// console.log(node);
+		},
 		mousemove(e){
 			let time=this.mousemovetime++%10;
 			if(time==0){
 				let movex=e.pageX-this.dragStartData.x,
 					movey=e.pageY-this.dragStartData.y;
 				let node=document.querySelector(".selectedSortable");
-				node.style.transform=`translate(${movex}px, ${movey}px)`;
+				node.style.setProperty('--movex', `${movex}px`);
+				node.style.setProperty('--movey', `${movey}px`);
+				node.style.transform=`translate(calc(var(--movex) + var(--scrollx)), calc(var(--movey) + var(--scrolly)))`;
 				node.style.transition=`unset`;
 				this.mousemovetime = time;
 			}
@@ -81,11 +152,16 @@ export default {
 			if(this.disabled)return;
 			//是否正在拖拽
 			if(this.dragStartData.index!=-1)return;
+			let scrollElementContainer=this.getParentAutoScrollElement(e.target,true);
 			this.dragStartData={
 				index,
 				x:e.pageX,
-				y:e.pageY
+				y:e.pageY,
+				scrollTop:scrollElementContainer.scrollTop,
+				scrollLeft:scrollElementContainer.scrollLeft
 			}
+
+			scrollElementContainer.addEventListener("scroll",this.scroll);
 			document.addEventListener("mousemove", this.mousemove);
 			document.addEventListener("mouseup", this.mouseup);
 			e.preventDefault();
@@ -136,17 +212,19 @@ export default {
 								console.log("在"+i+"上方");
 								break;
 							}else if(lastRange.top==top&&lastRange.bottom==bottom){
-								//左右关系
-								let listItem=this.list[this.dragStartData.index];
-								this.list.splice(i,0,listItem);
-								if(this.dragStartData.index<i){
-									this.list.splice(this.dragStartData.index,1);
-								}else{
-									this.list.splice(this.dragStartData.index+1,1);
+								//左右关系,只取左侧的
+								if(mousex<left){//不需要判断lastRange，在之前会被其他分支拦截
+									let listItem=this.list[this.dragStartData.index];
+									this.list.splice(i,0,listItem);
+									if(this.dragStartData.index<i){
+										this.list.splice(this.dragStartData.index,1);
+									}else{
+										this.list.splice(this.dragStartData.index+1,1);
+									}
+									endindex=i;
+									console.log("在"+i+"左侧");
+									break;
 								}
-								endindex=i;
-								console.log("在"+i+"左侧");
-								break;
 							}else if(lastRange.bottom<top){
 								//换行关系，去除掉上下关系之后的
 								if(mousex>lastRange.right||mousex<left){
@@ -196,6 +274,9 @@ export default {
 				movex,
 				movey
 			};
+			let selectedSortableContainer=document.querySelector(".selectedSortableContainer");
+			let scrollElementContainer=this.getParentAutoScrollElement(selectedSortableContainer,true);
+			scrollElementContainer.removeEventListener("scroll",this.scroll);
 		},
 		afterMove(e){
 			//不监听子元素的事件
@@ -222,6 +303,10 @@ export default {
 
 <style scoped>
 	.usetransitionInSort{
+		--scrollx:0px;
+		--scrolly:0px;
+		--movex:0px;
+		--movey:0px;
 		transition: all v-bind("durationCssStr");
 	}
 	.sorttransition-move {
