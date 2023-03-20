@@ -221,8 +221,22 @@ export default {
 									}else{
 										this.list.splice(this.dragStartData.index+1,1);
 									}
-									endindex=i;
+									//不会出现第一个分支，所以可以-1
+									endindex=i-1;
 									console.log("在"+i+"左侧");
+									break;
+								}else if(mousex<right &&mousey<top){
+									//在上面
+									let listItem=this.list[this.dragStartData.index];
+									this.list.splice(i,0,listItem);
+									if(this.dragStartData.index<i){
+										this.list.splice(this.dragStartData.index,1);
+									}else{
+										this.list.splice(this.dragStartData.index+1,1);
+									}
+									//不会出现第一个分支，所以可以-1
+									endindex=i-1;
+									console.log("在"+i+"上面");
 									break;
 								}
 							}else if(lastRange.bottom<top){
