@@ -118,24 +118,34 @@ export default{//默认设置
 		value:0.1,
 		dependency:["rangeTransition"],
 	},
-	touchProcess:{
-		type:"hiddenSwitch",
-		key:"touchProcess",//字段名
-		name:"触屏控制进度",
-		value:true
-	},
-	touchVolume:{
-		type:"hiddenSwitch",
-		key:"touchVolume",//字段名
-		name:"触屏控制音量",
-		value:true
-	},
-	touchHandler:{//变速幅度
+	touchHandler:{//触控设置
 		name:"触屏处理",
 		type:"checkbox",
+		list:{
+			touchProcess:{
+				type:"hiddenSwitch",
+				key:"touchProcess",//字段名
+				name:"触屏控制进度",
+				value:true
+			},
+			touchVolume:{
+				type:"hiddenSwitch",
+				key:"touchVolume",//字段名
+				name:"触屏控制音量",
+				value:true
+			},
+		},
 		value:[
 			"touchProcess",//指向type="hiddenSwitch"的对应键值
 			"touchVolume",
+		],
+	},
+	test1:{
+		name:"测试1",
+		type:"folder",
+		children:[
+			"test2",
+			"test3",
 		],
 	},
 }

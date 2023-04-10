@@ -4,7 +4,9 @@
 		<el-select
 			v-model="setting.value"
 			:disabled="disabled"
-			@change="$emit('end')"
+			@change="changefunction"
+			@visibleChange="visiblechange"
+			ref="select"
 		>
 			<el-option
 				v-for="(item,index) in setting.list"
@@ -18,9 +20,21 @@
 </template>
   
 <script>
+import {toRefs} from 'vue'
 export default {
 	props:["disabled","setting"],
 	emits:["end"],
+	methods:{
+		changefunction(){
+			this.$emit('end');
+		},
+		visiblechange(show){
+			if(show)return;
+			this.$nextTick(()=>{
+				this.$refs.select.blur();
+			})
+		}
+	}
 }
 </script>
 

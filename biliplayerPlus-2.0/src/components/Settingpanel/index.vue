@@ -72,64 +72,6 @@
 					</template>
 				</Sortable>
 			</div>
-			<draggable
-				class="gridbox"
-				v-model="configIndexList"
-				group="configIndexList"
-				:disabled="disableDrag"
-				:animation="100"
-				:scroll="true"
-				ghostClass="ghostGridbox"
-				chosenClass="chosenGridbox"
-				@end="saveSettingOrder"
-			>
-				<template #item="{ element, index }">
-					<el-card
-						shadow="hover"
-					>
-						<el-tooltip
-							class="box-item"
-							effect="light"
-							:disabled="!disableDrag||!config[element].title"
-							:content="config[element].title"
-							placement="top-start"
-							:show-after="800"
-						>
-							<!-- switch -->
-							<Switch
-								v-if="config[element].type=='bool'"
-								:setting="config[element]"
-								:disabled="!disableDrag"
-								@end="saveconfig"
-							/>
-							<!-- 下拉框 -->
-							<SelectBox
-								v-if="config[element].type=='select'"
-								:setting="config[element]"
-								:disabled="!disableDrag"
-								@end="saveconfig"
-							/>
-							<!-- 数字 -->
-							<NumberBox
-								v-else-if="config[element].type=='range'"
-								:setting="config[element]"
-								:disabled="!disableDrag"
-								@end="saveconfig"
-							/>
-							<!-- 快捷键 -->
-							<Keyboard
-								v-else-if="config[element].type=='keyboard'"
-								:setting="config[element]"
-								:keyname="element"
-								:disabled="!disableDrag"
-								@end="saveconfig"
-							/>
-							<!-- 其他 -->
-							<div v-else>{{ config[element] }} {{ index }}</div>
-						</el-tooltip>
-					</el-card>
-				</template>
-			</draggable>
 		</el-scrollbar>
 	</div>
 	<hotkeysHandler ref="hotkeysHandler"></hotkeysHandler>
