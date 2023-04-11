@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import defaultconfig from 'setting/defaultconfig'
-import {exportmixin,mixin} from 'setting/configTool'
+import {exportmixin,mixin,unflattenObj,flattenObj} from 'setting/configTool'
 import {GM_setValue,GM_deleteValue,GM_getValue} from '$'
 
 export const useConfigStore = defineStore('config', {
@@ -25,11 +25,35 @@ export const useConfigStore = defineStore('config', {
 			this.$reset();
 		},
 		saveSettingOrder(){
-			GM_setValue("configIndexList", this.configIndexList);
+			if(JSON.stringify(this.configIndexList) == JSON.stringify([...Object.keys(defaultconfig)])){
+				GM_deleteValue("configIndexList");
+			}else{
+				GM_setValue("configIndexList", this.configIndexList);
+			}
 		},
-		saveConfig(){
-			let exportdata=exportmixin(defaultconfig,this.config);
-			GM_setValue("config", exportdata);
+		saveConfig(path){
+			let exportdata;
+			if(path){//只更新部分
+				eval(`exportdata=exportmixin(defaultconfig.${path},this.config.${path})`);
+				let newconfig=GM_getValue("config",{});
+				console.log(JSON.stringify(exportdata));
+				if(JSON.stringify(exportdata)==`{}`){
+					//去扁平化删除内容
+					newconfig=unflattenObj(newconfig);
+					delete newconfig[path];
+					//删除后重新扁平化
+					newconfig=flattenObj(newconfig);
+				}else{
+					for (const key in exportdata) {
+						const value = exportdata[key];
+						newconfig[path+"."+key]=value;
+					}
+				}
+				GM_setValue("config", newconfig);
+			}else{
+				exportdata=exportmixin(defaultconfig,this.config)
+				GM_setValue("config", exportdata);
+			}
 		},
 		setconfig(key, value){
 			//只处理字符串    

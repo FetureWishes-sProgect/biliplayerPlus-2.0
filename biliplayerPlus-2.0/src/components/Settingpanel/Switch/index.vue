@@ -5,7 +5,7 @@
 		:active-text="setting.name"
 		:disabled="disabled"
 		@click="click"
-		@change="$emit('end')"
+		@change="changefunction(path)"
 	/>
 </template>
 
@@ -14,9 +14,11 @@
 import {useConfigStore} from 'store/config-store'
 import {useHotkeysStore} from 'store/hotkeys-store';
 export default {
-	props:["disabled","setting"],
-	emits:["end"],
+	props:["disabled","setting","path"],
 	methods:{
+		changefunction(path){
+			useConfigStore().saveConfig(path);
+		},
 		click(){
 			let a=useConfigStore();
 			let b=useHotkeysStore();

@@ -25,7 +25,16 @@
 					:list="configIndexList"
 				>
 					<template #item="{ element, index }">
+						
+						<!-- 分类栏 -->
+						<Folder
+							v-if="config[element].type=='folder'"
+							:setting="config[element]"
+							:path="element"
+							:disabled="!disableDrag"
+						/>
 						<el-card
+							v-else
 							shadow="hover"
 						>
 							<el-tooltip
@@ -40,30 +49,30 @@
 								<Switch
 									v-if="config[element].type=='bool'"
 									:setting="config[element]"
+									:path="element"
 									:disabled="!disableDrag"
-									@end="saveconfig"
 								/>
 								<!-- 下拉框 -->
 								<SelectBox
 									v-if="config[element].type=='select'"
 									:setting="config[element]"
+									:path="element"
 									:disabled="!disableDrag"
-									@end="saveconfig"
 								/>
 								<!-- 数字 -->
 								<NumberBox
 									v-else-if="config[element].type=='range'"
 									:setting="config[element]"
+									:path="element"
 									:disabled="!disableDrag"
-									@end="saveconfig"
 								/>
 								<!-- 快捷键 -->
 								<Keyboard
 									v-else-if="config[element].type=='keyboard'"
 									:setting="config[element]"
 									:keyname="element"
+									:path="element"
 									:disabled="!disableDrag"
-									@end="saveconfig"
 								/>
 								<!-- 其他 -->
 								<div v-else>{{ config[element] }} {{ index }}</div>
@@ -93,6 +102,7 @@ import Switch from './Switch/index.vue'
 import SelectBox from './SelectBox/index.vue'
 import NumberBox from './NumberBox/index.vue'
 import Keyboard from './Keyboard/index.vue'
+import Folder from './Folder/index.vue'
 import hotkeysHandler from '^/src/handler/hotkeysHandler/index.vue'
 import Sortable from '../Tools/Sortable/index.vue'
 
@@ -105,6 +115,7 @@ export default {
 		SelectBox,
 		NumberBox,
 		Keyboard,
+		Folder,
 		hotkeysHandler,
 		Sortable
 	},
@@ -181,7 +192,8 @@ export default {
 	},
 	methods:{
 		switchDraggable(){
-			this.disableDrag=!this.disableDrag
+			this.disableDrag=!this.disableDrag;
+			if(this.disableDrag)this.saveSettingOrder();
 		},
 		resetSetting(){
 			useConfigStore().reset();

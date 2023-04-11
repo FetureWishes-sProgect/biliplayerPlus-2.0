@@ -18,11 +18,13 @@ const flattenObj = (data) => {
                     recurse(cur[key], prop ? `${prop}.${key}` : key)
                 );
             } else {
-                result[prop] = {};
+				if(prop) {
+					result[prop] = {};
+				}
             }
         }
     };
-    recurse(data, "");
+    recurse(data);
     return result;
 };
 

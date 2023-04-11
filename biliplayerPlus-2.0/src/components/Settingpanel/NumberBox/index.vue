@@ -10,15 +10,20 @@
 			:step="setting.step"
 			:disabled="disabled"
 			show-input
-			@change="$emit('end')"
+			@change="changefunction(path)"
 		/>
 	</div>
 </template>
 
 <script>
+import {useConfigStore} from 'store/config-store'
 export default {
-	props:["disabled","setting"],
-	emits:["end"],
+	props:["disabled","setting","path"],
+	methods:{
+		changefunction(path){
+			useConfigStore().saveConfig(path);
+		},
+	}
 }
 </script>
 

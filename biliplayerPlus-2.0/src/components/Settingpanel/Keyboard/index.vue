@@ -16,8 +16,7 @@ import {useConfigStore} from 'store/config-store'
 import {useHotkeysStore} from 'store/hotkeys-store';
 
 export default {
-	props:["setting","disabled","keyname"],
-	emits:["end"],
+	props:["setting","disabled","keyname","path"],
 	data(){
 		return {
 			hotkeymanager:useHotkeysStore(),
@@ -79,7 +78,7 @@ export default {
 				code:this.setting.code,
 				value:this.setting.value
 			});
-			this.$emit("end");
+			useConfigStore().saveConfig(this.path);
 		}
 	}
 }

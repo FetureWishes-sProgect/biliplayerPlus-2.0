@@ -147,5 +147,38 @@ export default{//默认设置
 			"test2",
 			"test3",
 		],
+		test2:{
+			name:"测试1",
+			type:"folder",
+			children:[
+				"test2",
+				"test3",
+			],
+			test2:{//全屏
+				name:"全屏",
+				type:"keyboard",
+				value:`=`,
+				code:"Slash",
+				dependency:["keyBindOne2One"],
+			},
+			test3:{//默认速度
+				name:"默认播放速度",
+				type:"range",
+				start:0.1,
+				end:10,
+				step:0.1,
+				value:1,
+				dependency:["rangeTransition"],
+			},
+		},
+		test3:{//默认速度
+			name:"默认播放速度",
+			type:"range",
+			start:0.1,
+			end:10,
+			step:0.1,
+			value:1,
+			dependency:["rangeTransition"],
+		},
 	},
 }

@@ -1,10 +1,11 @@
 <template>
 	<el-space>
 		{{ setting.name }}
+		{{ path }}
 		<el-select
 			v-model="setting.value"
 			:disabled="disabled"
-			@change="changefunction"
+			@change="changefunction(path)"
 			@visibleChange="visiblechange"
 			ref="select"
 		>
@@ -20,13 +21,12 @@
 </template>
   
 <script>
-import {toRefs} from 'vue'
+import {useConfigStore} from 'store/config-store'
 export default {
-	props:["disabled","setting"],
-	emits:["end"],
+	props:["disabled","setting","path"],
 	methods:{
-		changefunction(){
-			this.$emit('end');
+		changefunction(path){
+			useConfigStore().saveConfig(path);
 		},
 		visiblechange(show){
 			if(show)return;
