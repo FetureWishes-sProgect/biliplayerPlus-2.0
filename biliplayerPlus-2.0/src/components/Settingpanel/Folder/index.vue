@@ -1,5 +1,7 @@
 <template>
-	<div>
+	<div
+		class="header"
+	>
 		{{setting.name}}
 		{{ path }}
 	</div>
@@ -67,7 +69,6 @@
 </template>
   
 <script>
-import {useConfigStore} from 'store/config-store'
 
 // 组件导入
 import Switch from '../Switch/index.vue'
@@ -82,19 +83,22 @@ import Sortable from '../../Tools/Sortable/index.vue'
 export default {
 	name:"Folder",
 	props:["disabled","setting","path"],
-	emits:["end"],
-	methods:{
-		saveconfig(){
-			useConfigStore().saveConfig();
-		},
-	}
+	emits:["end"]
 }
 </script>
 
-<style>
+<style scoped>
+	.header{
+		font-size: 16px;
+		line-height: 30px;
+		color: #606266;
+		word-break: break-all;
+	}
 	.gridbox{
 		display: grid;
-		padding-left: 20px;;
+		margin-left: 10px;
+		padding-left: 10px;
+		border-left: 2px solid #409eff;
 		grid-gap: 10px;
 		grid-auto-flow: row dense;
 		color: #606266;

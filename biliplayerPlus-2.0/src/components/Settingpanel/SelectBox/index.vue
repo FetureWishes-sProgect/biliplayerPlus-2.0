@@ -1,7 +1,6 @@
 <template>
 	<el-space>
 		{{ setting.name }}
-		{{ path }}
 		<el-select
 			v-model="setting.value"
 			:disabled="disabled"

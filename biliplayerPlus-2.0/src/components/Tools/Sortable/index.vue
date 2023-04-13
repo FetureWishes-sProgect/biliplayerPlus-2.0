@@ -2,7 +2,8 @@
 	<TransitionGroup
 		name="sorttransition"
 	>
-		<div
+		<component
+			:is="tagName"
 			v-for="(element,index) in list"
 			:key="JSON.stringify(element)"
 			:ref="'sortable'+index"
@@ -23,7 +24,7 @@
 					no data
 				</slot>
 			</div>
-		</div>
+		</component>
 	</TransitionGroup>
 </template>
 
@@ -37,6 +38,10 @@ export default {
 		duration:{
 			type:Number,
 			default:0.5
+		},
+		tagName:{
+			type:String,
+			default:"div"
 		}
 	},
 	components: { TransitionGroup },
