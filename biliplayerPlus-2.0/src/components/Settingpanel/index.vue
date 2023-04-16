@@ -213,16 +213,21 @@ export default {
 
 		
 		mousemove(e){
-			let time=this.mousemovetime++%10;
-			if(time==0){
-				let movex=this.lastDragData.x+e.pageX-this.dragData.x,
-					movey=this.lastDragData.y+e.pageY-this.dragData.y;
-				let node=document.querySelector(".settingpanel");
-				node.style.transform=`translate(${movex}px, ${movey}px)`;
-				node.style.transition=`unset`;
-				this.mousemovetime = time;
-				// this.moveData = {x:movex,y:movey};
+			let fun=()=>{
+				let nowDate = new Date();
+				let pasttime=nowDate-this.mousemovetime;
+				console.log(pasttime);
+				if(pasttime>=30){
+					let movex=this.lastDragData.x+e.pageX-this.dragData.x,
+						movey=this.lastDragData.y+e.pageY-this.dragData.y;
+					let node=document.querySelector(".settingpanel");
+					node.style.transform=`translate(${movex}px, ${movey}px)`;
+					node.style.transition=`unset`;
+					this.mousemovetime=nowDate;
+				}
 			}
+			fun();
+			return fun;
 		},
 		mousedown(e){
 			if(e.button!=0)return;

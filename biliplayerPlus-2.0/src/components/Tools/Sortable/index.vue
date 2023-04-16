@@ -138,17 +138,23 @@ export default {
 			// console.log(node);
 		},
 		mousemove(e){
-			let time=this.mousemovetime++%10;
-			if(time==0){
-				let movex=e.pageX-this.dragStartData.x,
-					movey=e.pageY-this.dragStartData.y;
-				let node=document.querySelector(".selectedSortable");
-				node.style.setProperty('--movex', `${movex}px`);
-				node.style.setProperty('--movey', `${movey}px`);
-				node.style.transform=`translate(calc(var(--movex) + var(--scrollx)), calc(var(--movey) + var(--scrolly)))`;
-				node.style.transition=`unset`;
-				this.mousemovetime = time;
+			let fun=()=>{
+				let nowDate = new Date();
+				let pasttime=nowDate-this.mousemovetime;
+				console.log(pasttime);
+				if(pasttime>=20){
+					let movex=e.pageX-this.dragStartData.x,
+						movey=e.pageY-this.dragStartData.y;
+					let node=document.querySelector(".selectedSortable");
+					node.style.setProperty('--movex', `${movex}px`);
+					node.style.setProperty('--movey', `${movey}px`);
+					node.style.transform=`translate(calc(var(--movex) + var(--scrollx)), calc(var(--movey) + var(--scrolly)))`;
+					node.style.transition=`unset`;
+					this.mousemovetime=nowDate;
+				}
 			}
+			fun();
+			return fun;
 		},
 		mousedown(e,index){
 			//左键点击
