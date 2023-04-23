@@ -216,7 +216,6 @@ export default {
 			let fun=()=>{
 				let nowDate = new Date();
 				let pasttime=nowDate-this.mousemovetime;
-				console.log(pasttime);
 				if(pasttime>=30){
 					let movex=this.lastDragData.x+e.pageX-this.dragData.x,
 						movey=this.lastDragData.y+e.pageY-this.dragData.y;
