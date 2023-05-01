@@ -106,7 +106,7 @@ export default{//默认设置
 		start:0.1,
 		end:10,
 		step:0.1,
-		value:1,
+		value:2,
 		dependency:["rangeTransition"],
 	},
 	defaultChangeSpeed:{//变速幅度
